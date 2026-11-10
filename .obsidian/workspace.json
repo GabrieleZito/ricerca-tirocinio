@@ -11,10 +11,14 @@
             "id": "a68d678b3a20be58",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "Overview.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Overview"
             }
           },
           {
@@ -205,7 +209,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 542.5
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -221,15 +225,15 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "3685ba3cca7f1562",
+  "active": "a68d678b3a20be58",
   "lastOpenFiles": [
+    "Pipeline Avatar Vocale.md",
     "pipeline_avatar_vocale.md",
     "Untitled.md",
     "Overview.md",
     "Pipeline.md",
     "Pasted image 20261027124749.png",
     "Pipeline STT–LLM–TTS per un avatar assistente in Unity.md",
-    "Pipeline Avatar Vocale.md",
     "Calendar/2026-12-09 4.md",
     "Calendar/2026-12-08 4.md",
     "Calendar/2026-12-07 4.md",
