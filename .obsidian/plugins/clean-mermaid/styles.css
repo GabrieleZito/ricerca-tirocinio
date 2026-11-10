@@ -1,0 +1,471 @@
+/* Clean Mermaid — 图表卡片的样式。
+   所有选择器都带 `cm-` 前缀做命名空间。 */
+
+/* ---------------------------------------------------------------- 宿主节点 */
+
+.cm-host {
+	padding: 0;
+	background: transparent;
+}
+
+.cm-block {
+	margin: 12px 0;
+}
+
+/* ------------------------------------------------------------------- 卡片 */
+
+.cm-card {
+	position: relative;
+	background: var(--cm-canvas-bg, var(--background-primary));
+	border: 1px solid rgba(0, 0, 0, 0.06);
+	border-radius: 10px;
+	padding: 16px;
+}
+
+body.theme-dark .cm-card {
+	border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ------------------------------------------------------------------ 画布 */
+
+.cm-canvas {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	overflow: hidden;
+	border-radius: 6px;
+	touch-action: pan-y;
+}
+
+.cm-media-image {
+	display: block;
+	flex: 0 0 auto;
+	transform-origin: center center;
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+/* 图片化预览的尺寸由我们的缩放结果决定：Obsidian 在内容区给 img 加了 max-width:100%
+   （阅读视图 `.markdown-rendered img`、实时预览 `.markdown-source-view.mod-cm6 img`），
+   这里用更高特异性压回去，不用 !important（0.1.4 复审 CSS LINT 项）。 */
+.cm-stage .cm-canvas .cm-media-image {
+	max-width: none;
+	max-height: none;
+}
+
+.cm-canvas.cm-grabbing,
+.cm-canvas.cm-grabbing .cm-media-image {
+	cursor: grabbing;
+}
+
+/* ----------------------------------------------------------------- 工具条 */
+
+.cm-toolbar {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 2;
+	display: flex;
+	gap: 2px;
+	max-width: calc(100% - 12px);
+	opacity: 0;
+	transition: opacity 120ms ease;
+}
+
+.cm-card:hover .cm-toolbar,
+.cm-card.cm-toolbar-always .cm-toolbar {
+	opacity: 1;
+}
+
+/* 「双击展开」教学标签：跟着工具条一起淡入，展开过一次图表之后就不再渲染。
+   它是标签不是按钮（真正可点的是它右手边的展开按钮），所以不接指针事件；
+   命中它的事件照常落到卡片上，双击因此仍然有效。整句文案比四个字宽，窄分栏下允许截断，
+   别让它把工具条顶出卡片。 */
+.cm-toolbar-hint {
+	flex: 0 1 auto;
+	min-width: 0;
+	height: 26px;
+	line-height: 26px;
+	padding: 0 4px 0 2px;
+	overflow: hidden;
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	pointer-events: none;
+	user-select: none;
+}
+
+.cm-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.cm-btn:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+/* 自适应开关的开启态：用强调色标出；关闭时就是普通工具条按钮的样子。 */
+.cm-modal-toolbar .cm-btn.cm-btn-active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.cm-modal-toolbar .cm-btn.cm-btn-active:hover {
+	background: var(--interactive-accent-hover);
+	color: var(--text-on-accent);
+}
+
+.cm-btn svg {
+	width: 15px;
+	height: 15px;
+}
+
+.cm-btn-text {
+	width: auto;
+	padding: 0 8px;
+	font-size: var(--font-ui-smaller);
+}
+
+/* -------------------------------------------------------------------- 菜单 */
+
+.cm-menu {
+	position: absolute;
+	top: 34px;
+	right: 6px;
+	z-index: 3;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 180px;
+	padding: 4px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	box-shadow: var(--shadow-s);
+}
+
+.cm-menu-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 8px;
+	border: none;
+	border-radius: 5px;
+	background: transparent;
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	text-align: left;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.cm-menu-item:hover {
+	background: var(--background-modifier-hover);
+}
+
+.cm-menu-icon {
+	display: flex;
+	color: var(--text-muted);
+}
+
+.cm-menu-icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* --------------------------------------------------------------- 缩放徽标 */
+
+.cm-zoom-badge {
+	position: absolute;
+	right: 8px;
+	bottom: 8px;
+	z-index: 2;
+	padding: 2px 6px;
+	border-radius: 5px;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+	font-size: 11px;
+	line-height: 1.4;
+	cursor: pointer;
+}
+
+/* 隐藏态按组件点名：特异性 (0,2,0) 压过 `.cm-menu` 自身的 display:flex，不靠 !important
+   （0.1.4 复审 CSS LINT 项）。 */
+.cm-menu.cm-hidden,
+.cm-zoom-badge.cm-hidden {
+	display: none;
+}
+
+/* 实时预览：Obsidian 自己渲染出来的输出，为了让位给卡片而隐藏。官方输出可能带内联样式，
+   只有 !important 压得住 —— 复审 CSS LINT 报的这条属刻意保留，见 TODO。 */
+.cm-core-hidden {
+	display: none !important;
+}
+
+/* 核心渲染器会异步往同一个部件里继续追加输出，一次性隐藏子元素并不够 —— 从我们的卡片存在那一刻
+   起就按规则把官方输出按住。这里只点名列出官方容器，免得连 Obsidian 自己的部件级 UI（例如
+   `.embed-actions`）一起挡掉。「卡片已经撑起内容」由 `src/livepreview.ts` 打在部件上的
+   `.cm-live-guard` 表示，而不是用结构选择器去够 —— 等有了内容才加这个类是刻意为之：首次渲染还在
+   进行时，正是官方输出在撑这个块的高度，此刻塌成 0 会让笔记跳两次而不是一次。
+   信任守卫 `.is-guarded` 保持可见。这里对抗的是官方异步追加、可能带内联样式的输出，
+   !important 刻意保留 —— 复审 CSS LINT 报的这条同理，见 TODO。 */
+.cm-embed-block.cm-lang-mermaid.cm-live-guard > :is(.mermaid-wrapper, .mermaid):not(.is-guarded) {
+	display: none !important;
+}
+
+/* ------------------------------------------------------------- plain / 错误 */
+
+.cm-plain {
+	display: flex;
+	justify-content: center;
+}
+
+.cm-media-plain {
+	max-width: 100%;
+	height: auto;
+}
+
+.cm-error-title {
+	margin-bottom: 4px;
+	color: var(--text-error);
+	font-weight: 600;
+}
+
+.cm-error-message {
+	color: var(--text-normal);
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	white-space: pre-wrap;
+}
+
+.cm-error-hint {
+	margin-top: 6px;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.cm-error-details {
+	margin-top: 8px;
+}
+
+.cm-error-details pre {
+	overflow: auto;
+	font-size: var(--font-ui-smaller);
+}
+
+/* ------------------------------------------------------------------- 模态框 */
+
+.modal.cm-modal {
+	/* 兜底尺寸与打开时 JS 写入的一致（视口上限）；打开后由内联宽高接管。 */
+	width: 92vw;
+	max-width: 92vw;
+	height: 88vh;
+	max-height: 88vh;
+	position: relative;
+}
+
+.modal.cm-modal .modal-content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.cm-modal-content {
+	gap: 8px;
+	min-height: 0;
+}
+
+.cm-modal-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cm-modal-zoom-label {
+	min-width: 46px;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	text-align: center;
+}
+
+.cm-toolbar-spacer {
+	flex: 1 1 auto;
+}
+
+.cm-modal-stage {
+	position: relative;
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 200px;
+	overflow: hidden;
+	background: var(--cm-modal-bg, var(--background-primary));
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	cursor: grab;
+	touch-action: none;
+}
+
+.cm-modal-stage.cm-grabbing {
+	cursor: grabbing;
+}
+
+.cm-modal-media {
+	display: block;
+	transform-origin: center center;
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+/* 同卡片画布：主题可能给 `.modal img` 加 max-width:100%，用更高特异性压回去，
+   不用 !important（0.1.4 复审 CSS LINT 项）。 */
+.cm-modal-stage .cm-modal-media {
+	max-width: none;
+	max-height: none;
+}
+
+/* 拖拽调窗口大小的命中区：贴着窗口四边与四角的透明条，只换光标不做视觉。 */
+.cm-modal-handle {
+	position: absolute;
+	z-index: 20;
+	touch-action: none;
+}
+
+.cm-modal-handle-n,
+.cm-modal-handle-s {
+	left: 12px;
+	right: 12px;
+	height: 6px;
+}
+
+.cm-modal-handle-n {
+	top: 0;
+	cursor: n-resize;
+}
+
+.cm-modal-handle-s {
+	bottom: 0;
+	cursor: s-resize;
+}
+
+.cm-modal-handle-e,
+.cm-modal-handle-w {
+	top: 12px;
+	bottom: 12px;
+	width: 6px;
+}
+
+.cm-modal-handle-e {
+	right: 0;
+	cursor: e-resize;
+}
+
+.cm-modal-handle-w {
+	left: 0;
+	cursor: w-resize;
+}
+
+.cm-modal-handle-ne,
+.cm-modal-handle-nw,
+.cm-modal-handle-se,
+.cm-modal-handle-sw {
+	width: 12px;
+	height: 12px;
+}
+
+.cm-modal-handle-ne {
+	top: 0;
+	right: 0;
+	cursor: ne-resize;
+}
+
+.cm-modal-handle-nw {
+	top: 0;
+	left: 0;
+	cursor: nw-resize;
+}
+
+.cm-modal-handle-se {
+	bottom: 0;
+	right: 0;
+	cursor: se-resize;
+}
+
+.cm-modal-handle-sw {
+	bottom: 0;
+	left: 0;
+	cursor: sw-resize;
+}
+
+/* ---------------------------------------------------------------- 设置页 */
+
+/* 声明式 render 拿到的 settingEl 本身就是 Obsidian 的 `.setting-item` 横向 flex 行
+   （app.css：display:flex; align-items:flex-start，且 .setting-item-info 带 min-width:0）。
+   这一节要上下堆叠三段内容，不压回去的话说明段会把「新增」行的 info 挤成一字一行。
+   特异性与 app.css 的 @container 窄面板规则打平，靠插件样式后加载取胜，不用 !important。 */
+.setting-item.cm-theme-settings {
+	flex-direction: column;
+	align-items: stretch;
+}
+
+/* 纵向间距统一由 `.setting-item` 自带的 row-gap 提供，这里不再叠加 margin；
+   一个主题都没有时整块不占位，免得白留一段 gap。 */
+.cm-theme-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.cm-theme-list:empty {
+	display: none;
+}
+
+/* 上下堆叠后，末尾那行自带的 margin-bottom 会让卡片下内边距比上内边距多 4px。 */
+.setting-item.cm-theme-settings > :last-child {
+	margin-bottom: 0;
+}
+
+.cm-theme-editor {
+	padding: 4px 12px 12px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+}
+
+.cm-theme-json {
+	width: 100%;
+	min-height: 160px;
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	resize: vertical;
+}
+
+.cm-theme-json.cm-invalid {
+	border-color: var(--text-error);
+}
+
+.cm-theme-status {
+	margin-top: 4px;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.cm-theme-status.cm-invalid {
+	color: var(--text-error);
+}
